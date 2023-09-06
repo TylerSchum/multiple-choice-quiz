@@ -1,5 +1,4 @@
 "use server";
-import { TRIVIA_API_BASE_URL } from "@/config";
 import axios from "axios";
 import { redirect } from "next/navigation";
 
@@ -18,7 +17,7 @@ export async function checkAnswers(formData: FormData) {
   for (const questionId of Object.keys(questionAnswerMap)) {
     try {
       const questionData = await axios.get(
-        TRIVIA_API_BASE_URL + "/question/" + questionId
+        "https://the-trivia-api.com/api/question/" + questionId
       );
       const correctAnswer = questionData.data.correctAnswer;
       if (questionAnswerMap[questionId] === correctAnswer) {

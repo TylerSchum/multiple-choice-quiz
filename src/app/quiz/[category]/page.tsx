@@ -5,7 +5,6 @@ import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 import { categoryMap } from "@/lib/categories";
 import { checkAnswers } from "@/app/actions";
-import { TRIVIA_API_BASE_URL } from "@/config";
 
 interface Question {
   category: string;
@@ -21,7 +20,7 @@ interface Question {
 }
 
 // Define your API endpoint
-const API_URL = TRIVIA_API_BASE_URL + "/questions";
+const API_URL = "https://the-trivia-api.com/api/questions";
 
 const shuffleAnswers = (question: Question) => {
   const answers = [...question.incorrectAnswers, question.correctAnswer];
