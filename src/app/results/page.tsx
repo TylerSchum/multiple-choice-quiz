@@ -1,3 +1,4 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { openai } from "@/lib/openAI";
 import axios from "axios";
 
@@ -28,18 +29,20 @@ export default function Results({
   }
   const funnyMessage = getOpenAIMessage(count);
   return (
-    <div className="h-[calc(100vh-64px)] bg-gray-100 flex flex-col justify-center items-center">
-      <div className="bg-white p-8 rounded-lg shadow-md text-center">
-        <h1 className="text-3xl font-semibold mb-4">Results</h1>
-        <p className="text-lg mb-4">
-          You got <span className="text-green-500 font-semibold">{count}</span>{" "}
-          correct answers out of 5.
-        </p>
-        <p className="text-lg mb-4">
-          Here&apos;s a funny message based on your score:
-        </p>
-        <p className="text-blue-700 italic text-xl">{funnyMessage}</p>
-      </div>
+    <div className="h-[calc(100vh-64px)] flex flex-col justify-center items-center px-10 max-w-md mx-auto">
+      <Card>
+        <CardHeader>
+          <CardTitle>Results</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-lg mb-4">
+            You got{" "}
+            <span className="text-green-500 font-semibold">{count}</span>{" "}
+            correct answers out of 5.
+          </p>
+          <p className="text-blue-700 italic text-xl">{funnyMessage}</p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

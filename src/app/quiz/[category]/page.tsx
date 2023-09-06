@@ -5,6 +5,17 @@ import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 import { categoryMap } from "@/lib/categories";
 import { checkAnswers } from "@/app/actions";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
 
 interface Question {
   category: string;
@@ -62,7 +73,7 @@ function QuizPage({ params }: { params: { category: string } }) {
     }
   }, [data, isLoading, isError]);
 
-  const { handleSubmit, control, trigger } = useForm();
+  const form = useForm();
 
   const onSubmit = (data: any) => {
     // Handle form data as needed, e.g., check answers
@@ -71,65 +82,81 @@ function QuizPage({ params }: { params: { category: string } }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10">
-      <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-semibold mb-4">
-          Quiz - {categoryMap[category as keyof typeof categoryMap]}
-        </h1>
-        {isLoading ? (
-          <p className="text-gray-500">Loading quiz questions...</p>
-        ) : isError ? (
-          <p className="text-red-500">Error loading quiz questions.</p>
-        ) : (
-          quizData && (
-            <form
-              action={async (formData) => {
-                const valid = await trigger();
-                console.log(valid);
-                if (valid) {
-                  await checkAnswers(formData);
-                }
-              }}
-            >
-              {quizData.map((question) => (
-                <div key={question.id} className="mb-6">
-                  <h2 className="text-lg font-semibold mb-2">
-                    {question.question}
-                  </h2>
-                  <ul className="list-none ml-6">
-                    {question.answers.map((answer, optionIndex) => (
-                      <li key={optionIndex} className="mb-2">
-                        <label className="inline-flex items-center">
-                          <Controller
-                            name={`${question.id}`}
-                            control={control}
-                            rules={{ required: true }}
-                            render={({ field }) => (
-                              <input
-                                className="mr-2"
-                                type="radio"
-                                {...field}
-                                value={answer}
-                              />
-                            )}
-                          />
-                          <span className="text-gray-700">{answer}</span>
-                        </label>
-                      </li>
+    <div className="max-w-md mx-auto my-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            Quiz - {categoryMap[category as keyof typeof categoryMap]}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div>
+            {isLoading ? (
+              <p className="text-gray-500">Loading quiz questions...</p>
+            ) : isError ? (
+              <p className="text-red-500">Error loading quiz questions.</p>
+            ) : (
+              quizData && (
+                <Form {...form}>
+                  <form
+                    action={async () => {
+                      const valid = await form.trigger();
+                      console.log(valid);
+                      if (valid) {
+                        const formData = new FormData();
+                        for (const [key, value] of Object.entries(
+                          form.getValues()
+                        )) {
+                          formData.append(key, value);
+                        }
+                        await checkAnswers(formData);
+                      }
+                    }}
+                  >
+                    {quizData.map((question) => (
+                      <FormField
+                        key={question.id}
+                        control={form.control}
+                        name={`${question.id}`}
+                        rules={{
+                          required: "Please select an answer",
+                        }}
+                        render={({ field }) => (
+                          <FormItem className="mb-6">
+                            <FormLabel className="text-lg font-semibold">
+                              {question.question}
+                            </FormLabel>
+                            <FormControl>
+                              <RadioGroup
+                                className="ml-2 flex flex-col space-y-1"
+                                onValueChange={field.onChange}
+                              >
+                                {question.answers.map((answer, optionIndex) => (
+                                  <FormItem
+                                    key={optionIndex}
+                                    className="flex items-center space-x-3 space-y-0"
+                                  >
+                                    <FormControl>
+                                      <RadioGroupItem value={answer} />
+                                    </FormControl>
+                                    <FormLabel>{answer}</FormLabel>
+                                  </FormItem>
+                                ))}
+                              </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      ></FormField>
                     ))}
-                  </ul>
-                </div>
-              ))}
-              <button
-                type="submit"
-                className="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-              >
-                Submit
-              </button>
-            </form>
-          )
-        )}
-      </div>
+                    <Button type="submit">Submit</Button>
+                  </form>
+                </Form>
+              )
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

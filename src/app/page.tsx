@@ -2,10 +2,30 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { categoryMap } from "@/lib/categories";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function Home() {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<
+    string | undefined
+  >();
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
@@ -18,35 +38,40 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10">
-      <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-semibold mb-4">Quiz</h1>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Select a category:
-          </label>
-          <div className="relative">
-            <select
-              className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-blue-500 focus:shadow-outline-blue focus:bg-white"
-              onChange={(e) => handleCategoryChange(e.target.value)}
-              value={selectedCategory || ""}
-            >
-              <option value="">Select a category</option>
-              {Object.keys(categoryMap).map((category) => (
-                <option key={category} value={category}>
-                  {categoryMap[category as keyof typeof categoryMap]}
-                </option>
-              ))}
-            </select>
+    <div className="max-w-md mx-auto my-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Quiz</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-4">
+            <Label>Select a category</Label>
+            <div className="relative">
+              <Select
+                onValueChange={(value) => handleCategoryChange(value)}
+                value={selectedCategory}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Categories</SelectLabel>
+                    {Object.keys(categoryMap).map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {categoryMap[category as keyof typeof categoryMap]}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
-        <button
-          onClick={startQuiz}
-          className="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-        >
-          Start Quiz
-        </button>
-      </div>
+        </CardContent>
+        <CardFooter>
+          <Button onClick={startQuiz}>Start Quiz</Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
